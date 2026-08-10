@@ -11,9 +11,10 @@ declare global {
 export const MusicPlayer: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(70);
+  const [volume, setVolume] = useState(75);
   const [isLoaded, setIsLoaded] = useState(false);
-  const playerRef = useRef<any>(null);
+
+  const playerRef = useRef<any>(null); // YouTube Player
 
   const START_TIME = 48; // 0:48
   const END_TIME = 78;   // 1:18
@@ -21,7 +22,7 @@ export const MusicPlayer: React.FC = () => {
   useEffect(() => {
     let interval: any;
 
-    const initPlayer = () => {
+    const initYoutubePlayer = () => {
       if (playerRef.current || !window.YT || !window.YT.Player) return;
 
       try {
@@ -44,7 +45,7 @@ export const MusicPlayer: React.FC = () => {
             onReady: (event: any) => {
               setIsLoaded(true);
               try {
-                event.target.setVolume(70);
+                event.target.setVolume(volume);
                 event.target.seekTo(START_TIME, true);
                 event.target.playVideo();
                 setIsPlaying(true);
@@ -53,13 +54,12 @@ export const MusicPlayer: React.FC = () => {
               }
             },
             onStateChange: (event: any) => {
-              // 1 = playing, 2 = paused, 0 = ended
               if (event.data === 1) {
                 setIsPlaying(true);
               } else if (event.data === 2) {
                 setIsPlaying(false);
               } else if (event.data === 0) {
-                // Video ended (reached END_TIME or natural end) -> restart strictly from 0:48
+                // Loop strictly from 0:48 when ended
                 try {
                   event.target.seekTo(START_TIME, true);
                   event.target.playVideo();
@@ -83,10 +83,10 @@ export const MusicPlayer: React.FC = () => {
       firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag);
 
       window.onYouTubeIframeAPIReady = () => {
-        initPlayer();
+        initYoutubePlayer();
       };
     } else {
-      initPlayer();
+      initYoutubePlayer();
     }
 
     // Interval to strictly enforce 0:48 to 1:18 loop range
@@ -95,8 +95,7 @@ export const MusicPlayer: React.FC = () => {
         try {
           const currentTime = playerRef.current.getCurrentTime();
           const state = playerRef.current.getPlayerState?.();
-          
-          // If currentTime goes past END_TIME or drops below START_TIME while playing
+
           if (state === 1 && (currentTime >= END_TIME - 0.5 || currentTime < START_TIME - 1)) {
             playerRef.current.seekTo(START_TIME, true);
             playerRef.current.playVideo();
@@ -112,7 +111,7 @@ export const MusicPlayer: React.FC = () => {
     };
   }, []);
 
-  // First interaction play trigger for autoplay policy bypass
+  // First user interaction auto-play trigger
   useEffect(() => {
     const handleFirstClick = () => {
       if (playerRef.current && typeof playerRef.current.playVideo === "function") {
@@ -124,7 +123,7 @@ export const MusicPlayer: React.FC = () => {
             setIsPlaying(true);
           }
         } catch (err) {
-          // player might not be ready yet
+          // player might not be ready
         }
       }
     };
@@ -155,14 +154,15 @@ export const MusicPlayer: React.FC = () => {
   };
 
   const toggleMute = () => {
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+
     if (!playerRef.current || !isLoaded) return;
     try {
-      if (isMuted) {
-        playerRef.current.unMute();
-        setIsMuted(false);
-      } else {
+      if (nextMuted) {
         playerRef.current.mute();
-        setIsMuted(true);
+      } else {
+        playerRef.current.unMute();
       }
     } catch (e) {
       console.error("Toggle mute error:", e);
@@ -172,10 +172,12 @@ export const MusicPlayer: React.FC = () => {
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVol = Number(e.target.value);
     setVolume(newVol);
+
     if (!playerRef.current || !isLoaded) return;
     try {
       playerRef.current.setVolume(newVol);
       if (newVol === 0) {
+        playerRef.current.mute();
         setIsMuted(true);
       } else if (isMuted) {
         playerRef.current.unMute();
@@ -187,27 +189,17 @@ export const MusicPlayer: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2">
+    <div className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 z-40 flex items-center gap-2">
       {/* Hidden container for YouTube iframe */}
       <div className="absolute opacity-0 pointer-events-none w-1 h-1 overflow-hidden">
         <div id="yt-bg-player" />
       </div>
 
-      {/* Music Control Pill */}
-      <div className="bg-white/95 backdrop-blur-md border-3 border-[#FF4D6D] shadow-2xl rounded-full px-3.5 py-2 sm:px-4 sm:py-2.5 flex items-center gap-2.5 sm:gap-3 text-[#590D22] transition-transform hover:scale-102">
-        <div className="flex items-center gap-2">
-          <div className={`p-2 rounded-full transition-colors ${isPlaying ? "bg-[#FF4D6D] text-white animate-pulse" : "bg-[#FFB3C1] text-[#590D22]"}`}>
-            <Music className="w-4 h-4" />
-          </div>
-          <div className="text-xs font-black tracking-tight hidden xs:block">
-            {isPlaying ? (
-              <span className="flex items-center gap-1">
-                <span className="text-[#FF4D6D]">Трек</span> (0:48 - 1:18) 💕
-              </span>
-            ) : (
-              <span>Музыка 🎵</span>
-            )}
-          </div>
+      {/* Compact Audio Control Pill without title or upload button */}
+      <div id="music-player-pill" className="bg-white/95 backdrop-blur-md border-3 border-[#FF4D6D] shadow-2xl rounded-full px-3 py-2 sm:px-3.5 sm:py-2 flex items-center gap-2 sm:gap-2.5 text-[#590D22] transition-all hover:scale-102">
+        {/* Animated Music Icon */}
+        <div className={`p-2 rounded-full transition-colors ${isPlaying ? "bg-[#FF4D6D] text-white animate-pulse" : "bg-[#FFB3C1] text-[#590D22]"}`}>
+          <Music className="w-4 h-4" />
         </div>
 
         {/* Play/Pause Button */}
@@ -219,7 +211,7 @@ export const MusicPlayer: React.FC = () => {
           {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
         </button>
 
-        {/* Volume & Mute Section */}
+        {/* Volume & Mute Controls */}
         <div className="flex items-center gap-1.5 bg-[#FFF0F3] px-2.5 py-1 rounded-full border border-[#FFB3C1]">
           <button
             onClick={toggleMute}
@@ -241,7 +233,7 @@ export const MusicPlayer: React.FC = () => {
             max="100"
             value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
-            className="w-16 sm:w-20 h-1.5 bg-[#FFB3C1] rounded-lg appearance-none cursor-pointer accent-[#FF4D6D] focus:outline-none"
+            className="w-14 sm:w-20 h-1.5 bg-[#FFB3C1] rounded-lg appearance-none cursor-pointer accent-[#FF4D6D] focus:outline-none"
             title={`Громкость: ${isMuted ? 0 : volume}%`}
           />
         </div>

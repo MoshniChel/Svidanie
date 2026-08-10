@@ -83,18 +83,22 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
 
     const gap = 20; // clearance gap from YES button
 
-    // Define player exclusion zone in bottom-right corner
-    const playerWidth = 320;
-    const playerHeight = 100;
-    const playerLeftBoundary = window.innerWidth - playerWidth;
-    const playerTopBoundary = window.innerHeight - playerHeight;
+    // Get live bounding box of the music player pill to prevent overlap on mobile
+    const playerEl = document.getElementById("music-player-pill");
+    const playerRect = playerEl ? playerEl.getBoundingClientRect() : null;
+
+    // Player exclusion zone (with padding buffer)
+    const pLeft = playerRect ? playerRect.left - 24 : window.innerWidth - 260;
+    const pRight = playerRect ? playerRect.right + 24 : window.innerWidth;
+    const pTop = playerRect ? playerRect.top - 24 : window.innerHeight - 90;
+    const pBottom = playerRect ? playerRect.bottom + 24 : window.innerHeight;
 
     let bestX = 0;
     let bestY = 0;
     let maxDistSq = -1;
 
     // Sample candidate positions to guarantee non-overlap and in-bounds
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < 200; i++) {
       const candLeft = minX + (maxX > minX ? Math.random() * (maxX - minX) : 0);
       const candTop = minY + (maxY > minY ? Math.random() * (maxY - minY) : 0);
 
@@ -107,8 +111,10 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
 
       // Check overlap with fixed bottom-right Music Player
       const overlapsPlayer =
-        candLeft + noWidth > playerLeftBoundary &&
-        candTop + noHeight > playerTopBoundary;
+        candLeft < pRight &&
+        candLeft + noWidth > pLeft &&
+        candTop < pBottom &&
+        candTop + noHeight > pTop;
 
       if (!overlapsYes && !overlapsPlayer) {
         bestX = candLeft - initialNoLeft;
@@ -190,11 +196,11 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
           ref={noButtonRef}
           type="button"
           animate={hasMoved ? { x: noPosition.x, y: noPosition.y } : {}}
-          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          transition={{ type: "spring", stiffness: 220, damping: 20, mass: 0.6 }}
           onMouseEnter={moveNoButton}
           onTouchStart={handleNoAction}
           onClick={handleNoAction}
-          className={`px-6 py-3.5 font-extrabold text-sm rounded-full border-2 transition-all select-none cursor-pointer z-40 relative shadow-xl ${
+          className={`px-6 py-3.5 font-extrabold text-sm rounded-full border-2 select-none touch-none cursor-pointer z-40 relative shadow-xl transition-colors ${
             noCount >= 10
               ? "bg-[#FF4D6D] text-white border-[#A4133C] shadow-lg animate-pulse"
               : "bg-[#FFF0F3] hover:bg-[#FFB3C1]/50 text-[#590D22] border-[#FF758F]"
