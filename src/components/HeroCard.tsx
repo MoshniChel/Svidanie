@@ -34,7 +34,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
 
       {/* Main Heading */}
       <h2 className="text-3xl sm:text-5xl font-black text-[#590D22] tracking-tight mb-3">
-        Дорогая <span className="text-[#FF4D6D] underline decoration-[#FF85A1] underline-offset-4">{herName}</span>! 💕
+        Королева <span className="text-[#FF4D6D] underline decoration-[#FF85A1] underline-offset-4">{herName}</span>! 💕
       </h2>
 
       <p className="text-[#800F2F] font-serif italic text-base sm:text-xl max-w-xl mx-auto mb-6 leading-relaxed">

@@ -40,7 +40,7 @@ export const DateDetails: React.FC<DateDetailsProps> = ({
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-[11px] font-black uppercase text-[#800F2F] tracking-wider">Где</div>
-            <div className="font-extrabold text-[#590D22] text-base truncate">
+            <div className="font-extrabold text-[#590D22] text-base leading-tight">
               {invitation.locationName}
             </div>
             {invitation.locationAddress ? (

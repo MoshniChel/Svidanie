@@ -36,7 +36,7 @@ export const DEFAULT_INVITATION: InvitationData = {
   herName: "Аня",
   dateStr: "29 Августа 2026 года",
   timeStr: "22:00-23:00",
-  locationName: "По выбору Ризабека",
+  locationName: "По выбору Ани, но если что я выберу сам и согласую с ней",
   locationAddress: "",
   locationMapUrl: "",
   dressCode: "Любая удобная для тебя одежда ✨",
