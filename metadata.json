@@ -1,0 +1,6 @@
+{
+  "name": "Приглашение на Свидание",
+  "description": "Интерактивный одностраничный сайт для приглашения на свидание с веселыми кнопками, выбором еды, локации и отправкой уведомлений на почту.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
