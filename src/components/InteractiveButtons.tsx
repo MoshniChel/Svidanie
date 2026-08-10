@@ -83,15 +83,15 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
 
     const gap = 20; // clearance gap from YES button
 
-    // Get live bounding box of the music player pill to prevent overlap on mobile
+    // Get live bounding box of the music player pill if present
     const playerEl = document.getElementById("music-player-pill");
     const playerRect = playerEl ? playerEl.getBoundingClientRect() : null;
 
-    // Player exclusion zone (with padding buffer)
-    const pLeft = playerRect ? playerRect.left - 24 : window.innerWidth - 260;
-    const pRight = playerRect ? playerRect.right + 24 : window.innerWidth;
-    const pTop = playerRect ? playerRect.top - 24 : window.innerHeight - 90;
-    const pBottom = playerRect ? playerRect.bottom + 24 : window.innerHeight;
+    // Player exclusion zone (only active if player exists)
+    const pLeft = playerRect ? playerRect.left - 24 : 0;
+    const pRight = playerRect ? playerRect.right + 24 : 0;
+    const pTop = playerRect ? playerRect.top - 24 : 0;
+    const pBottom = playerRect ? playerRect.bottom + 24 : 0;
 
     let bestX = 0;
     let bestY = 0;
@@ -109,12 +109,13 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
         candTop - gap < yesRect.bottom &&
         candTop + noHeight + gap > yesRect.top;
 
-      // Check overlap with fixed bottom-right Music Player
-      const overlapsPlayer =
+      // Check overlap with fixed bottom-right Music Player (if visible)
+      const overlapsPlayer = playerRect ? (
         candLeft < pRight &&
         candLeft + noWidth > pLeft &&
         candTop < pBottom &&
-        candTop + noHeight > pTop;
+        candTop + noHeight > pTop
+      ) : false;
 
       if (!overlapsYes && !overlapsPlayer) {
         bestX = candLeft - initialNoLeft;
