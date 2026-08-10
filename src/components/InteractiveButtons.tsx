@@ -16,20 +16,110 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
   const [hasMoved, setHasMoved] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const yesButtonRef = useRef<HTMLButtonElement>(null);
+  const noButtonRef = useRef<HTMLButtonElement>(null);
 
   // Calculate dynamic scale for YES button as NO button is dodged
   const yesScale = Math.min(1 + noCount * 0.12, 1.7);
 
   const moveNoButton = () => {
     if (noCount >= 10) return;
-    if (!containerRef.current) return;
     
     const nextCount = noCount + 1;
     setNoCount(nextCount);
 
-    const randomX = (Math.random() - 0.5) * 520;
-    const randomY = (Math.random() - 0.5) * 280;
-    setNoPosition({ x: randomX, y: randomY });
+    if (nextCount >= 10) {
+      setNoPosition({ x: 0, y: 0 });
+      return;
+    }
+
+    if (!noButtonRef.current || !yesButtonRef.current) return;
+
+    const noRect = noButtonRef.current.getBoundingClientRect();
+    const yesRect = yesButtonRef.current.getBoundingClientRect();
+    const containerRect = containerRef.current?.getBoundingClientRect();
+
+    // Current initial top-left of NO button (without transform offset)
+    const initialNoLeft = noRect.left - noPosition.x;
+    const initialNoTop = noRect.top - noPosition.y;
+
+    const noWidth = noRect.width || 120;
+    const noHeight = noRect.height || 44;
+
+    // Padding from screen edges
+    const padding = 16;
+
+    let minX = padding;
+    let maxX = window.innerWidth - noWidth - padding;
+    let minY = padding;
+    let maxY = window.innerHeight - noHeight - padding;
+
+    if (containerRect) {
+      // Keep inside container bounds if space allows
+      const cMinX = Math.max(padding, containerRect.left + padding);
+      const cMaxX = Math.min(window.innerWidth - noWidth - padding, containerRect.right - noWidth - padding);
+      const cMinY = Math.max(padding, containerRect.top + padding);
+      const cMaxY = Math.min(window.innerHeight - noHeight - padding, containerRect.bottom - noHeight - padding);
+
+      if (cMaxX > cMinX) {
+        minX = cMinX;
+        maxX = cMaxX;
+      }
+      if (cMaxY > cMinY) {
+        minY = cMinY;
+        maxY = cMaxY;
+      }
+    }
+
+    // Safety checks for boundaries
+    if (maxX < minX) {
+      minX = padding;
+      maxX = Math.max(padding, window.innerWidth - noWidth - padding);
+    }
+    if (maxY < minY) {
+      minY = padding;
+      maxY = Math.max(padding, window.innerHeight - noHeight - padding);
+    }
+
+    const gap = 20; // 20px clearance gap from YES button
+
+    let bestX = 0;
+    let bestY = 0;
+    let maxDistSq = -1;
+
+    // Sample candidate positions to guarantee non-overlap and in-bounds
+    for (let i = 0; i < 100; i++) {
+      const candLeft = minX + (maxX > minX ? Math.random() * (maxX - minX) : 0);
+      const candTop = minY + (maxY > minY ? Math.random() * (maxY - minY) : 0);
+
+      // Check overlap with YES button
+      const overlapsYes =
+        candLeft - gap < yesRect.right &&
+        candLeft + noWidth + gap > yesRect.left &&
+        candTop - gap < yesRect.bottom &&
+        candTop + noHeight + gap > yesRect.top;
+
+      if (!overlapsYes) {
+        bestX = candLeft - initialNoLeft;
+        bestY = candTop - initialNoTop;
+        break;
+      }
+
+      // Track furthest position as fallback
+      const noCenterX = candLeft + noWidth / 2;
+      const noCenterY = candTop + noHeight / 2;
+      const yesCenterX = yesRect.left + yesRect.width / 2;
+      const yesCenterY = yesRect.top + yesRect.height / 2;
+      const distSq = (noCenterX - yesCenterX) ** 2 + (noCenterY - yesCenterY) ** 2;
+
+      if (distSq > maxDistSq) {
+        maxDistSq = distSq;
+        bestX = candLeft - initialNoLeft;
+        bestY = candTop - initialNoTop;
+      }
+    }
+
+    setNoPosition({ x: bestX, y: bestY });
     setHasMoved(true);
   };
 
@@ -68,6 +158,7 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
       <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 min-h-[90px] w-full relative">
         {/* YES BUTTON */}
         <motion.button
+          ref={yesButtonRef}
           type="button"
           disabled={isLoading}
           style={{ transform: `scale(${yesScale})` }}
@@ -85,6 +176,7 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
 
         {/* RUNAWAY NO BUTTON */}
         <motion.button
+          ref={noButtonRef}
           type="button"
           animate={hasMoved ? { x: noPosition.x, y: noPosition.y } : {}}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}

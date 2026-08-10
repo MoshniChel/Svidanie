@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import confetti from "canvas-confetti";
 import { motion } from "motion/react";
 import { PartyPopper } from "lucide-react";
-import celebrationImg from "../assets/images/celebration_love_1786337857701.jpg";
+import celebrationImg from "../assets/images/happy_cat_flowers_1786362849879.jpg";
 
 interface SuccessModalProps {
   onClose: () => void;
@@ -51,15 +51,15 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ onClose }) => {
         </div>
 
         {/* Big Headline */}
-        <h2 className="text-3xl sm:text-5xl font-black text-[#590D22] tracking-tight mb-4 uppercase">
-          УРААА! 🎉💕
+        <h2 className="text-2xl sm:text-3xl font-black text-[#590D22] tracking-tight mb-4 leading-tight">
+          УРААА! Да ну, ахуеть я ждал этого 10 тысячь лет 🎉💕
         </h2>
 
-        {/* Cat Meme Image */}
+        {/* Celebration Image */}
         <div className="w-56 h-56 sm:w-64 sm:h-64 mx-auto mb-6 relative rounded-3xl overflow-hidden border-4 border-[#FF4D6D] shadow-xl transform -rotate-2 hover:rotate-0 transition-transform">
           <img
             src={celebrationImg}
-            alt="Праздничный котик"
+            alt="Радостный кот с букетом"
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover"
           />

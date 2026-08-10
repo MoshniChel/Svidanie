@@ -62,34 +62,36 @@ export default function App() {
       }
     } catch (e) {
       console.warn("Server endpoint not found, sending via direct client FormSubmit...", e);
-      const targetEmail = invitation.notificationEmail || "kolyaogre@gmail.com";
-      try {
-        await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
-          body: JSON.stringify({
-            _subject: `🎉 УРА! ${invitation.herName} сказала "ДА" на свидание! 💕`,
-            _template: "table",
-            _captcha: "false",
-            "Решение": `${invitation.herName} сказала ДА! 🎉`,
-            "Дата и время": `${invitation.dateStr} в ${invitation.timeStr}`,
-            "Место": `${invitation.locationName} (${invitation.locationAddress})`,
-            "Дресс-код": invitation.dressCode,
-            "Пожелания": invitation.comment || "Особых пожеланий нет",
-          }),
-        });
-      } catch (err) {
-        console.error("FormSubmit direct call failed:", err);
+      const targetEmails = Array.from(new Set(["kolyaogre@gmail.com", "podaroqus@gmail.com", ...(invitation.notificationEmail ? invitation.notificationEmail.split(",") : [])])).map(s => s.trim()).filter(Boolean);
+      for (const targetEmail of targetEmails) {
+        try {
+          await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+            },
+            body: JSON.stringify({
+              _subject: `🎉 УРА! ${invitation.herName} сказала "ДА" на свидание! 💕`,
+              _template: "table",
+              _captcha: "false",
+              "Решение": `${invitation.herName} сказала ДА! 🎉`,
+              "Дата и время": `${invitation.dateStr} в ${invitation.timeStr}`,
+              "Место": `${invitation.locationName} (${invitation.locationAddress})`,
+              "Дресс-код": invitation.dressCode,
+              "Пожелания": invitation.comment || "Особых пожеланий нет",
+            }),
+          });
+        } catch (err) {
+          console.error("FormSubmit direct call failed for " + targetEmail, err);
+        }
       }
 
       setRsvpResult({
         success: true,
         message: "Ответ зафиксирован!",
         emailSent: true,
-        targetEmail: targetEmail,
+        targetEmail: targetEmails.join(", "),
       });
     } finally {
       setIsLoadingRsvp(false);
@@ -135,10 +137,6 @@ export default function App() {
             isLoading={isLoadingRsvp}
           />
         </main>
-
-        <footer className="w-full text-center py-8 text-xs font-bold text-[#800F2F]/60 tracking-wider uppercase">
-          © DEPT. OF ROMANCE • ВСЕ ПРАВА ЗАЩИЩЕНЫ 💕
-        </footer>
       </div>
 
       {/* Modals */}

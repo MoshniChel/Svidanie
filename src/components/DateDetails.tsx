@@ -43,7 +43,9 @@ export const DateDetails: React.FC<DateDetailsProps> = ({
             <div className="font-extrabold text-[#590D22] text-base truncate">
               {invitation.locationName}
             </div>
-            <div className="text-xs text-[#800F2F] font-medium truncate">{invitation.locationAddress}</div>
+            {invitation.locationAddress ? (
+              <div className="text-xs text-[#800F2F] font-medium truncate">{invitation.locationAddress}</div>
+            ) : null}
             {invitation.locationMapUrl && (
               <a
                 href={invitation.locationMapUrl}
@@ -80,7 +82,7 @@ export const DateDetails: React.FC<DateDetailsProps> = ({
         <textarea
           value={invitation.comment}
           onChange={(e) => onChangeComment(e.target.value)}
-          placeholder="Например: хочу сходить в парк посмотреть на уточек или захватить твоё хорошее настроение!..."
+          placeholder="Например: хочу сходить в парк, погулять по набережке после кафешки, хатю бананы и т.д"
           rows={3}
           className="w-full flex-1 p-3 text-xs sm:text-sm bg-[#FFF0F3] border-2 border-[#FF758F] rounded-xl focus:outline-none focus:border-[#FF4D6D] resize-none text-[#590D22] font-medium"
         />

@@ -18,6 +18,7 @@ export const MUSIC_OPTIONS = [
 ];
 
 export const RUNAWAY_PHRASES = [
+  "НЕТ",
   "Ты уверена? 🥺",
   "Подумай ещё раз! 🙏",
   "А если я куплю шоколадку? 🍫",
@@ -31,15 +32,15 @@ export const RUNAWAY_PHRASES = [
 ];
 
 export const DEFAULT_INVITATION: InvitationData = {
-  senderName: "",
+  senderName: "Ризабек",
   herName: "Аня",
-  dateStr: "Суббота, 15 Августа",
-  timeStr: "19:00",
-  locationName: "Уютный ресторан на крыше & прогулка",
-  locationAddress: "Центр города, ул. Пушкина, 10",
-  locationMapUrl: "https://maps.google.com/?q=ресторан+на+крыше",
-  dressCode: "Главное — твоя улыбка и удобная обувь для прогулок! 👟✨",
-  notificationEmail: "kolyaogre@gmail.com",
+  dateStr: "29 Августа 2026 года",
+  timeStr: "22:00-23:00",
+  locationName: "По выбору Ризабека",
+  locationAddress: "",
+  locationMapUrl: "",
+  dressCode: "Любая удобная для тебя одежда ✨",
+  notificationEmail: "kolyaogre@gmail.com, podaroqus@gmail.com",
   customMessage: "",
   selectedFoodIds: ["pizza", "desserts"],
   selectedMusic: "romantic",

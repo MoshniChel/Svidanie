@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { Heart, Sparkles, Star } from "lucide-react";
-import catImg from "../assets/images/funny_date_cat_1786337838057.jpg";
+import catImg from "../assets/images/cat_offering_rose_1786358638306.jpg";
 
 interface HeroCardProps {
   herName: string;
@@ -28,7 +28,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
       {/* Top Cute Badge */}
       <div className="bg-[#FF4D6D] text-white px-4 py-1.5 text-xs font-black tracking-widest uppercase mb-4 transform -rotate-2 shadow-md inline-flex items-center gap-2 rounded-lg border border-[#A4133C]">
         <Sparkles className="w-3.5 h-3.5 text-pink-200" />
-        <span>Я + Ты = Ахуенная пара ❤️</span>
+        <span>Газ на свидание со мной ❤️</span>
         <Star className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300" />
       </div>
 
@@ -38,7 +38,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
       </h2>
 
       <p className="text-[#800F2F] font-serif italic text-base sm:text-xl max-w-xl mx-auto mb-6 leading-relaxed">
-        У тебя есть одно очень важное незавершенное дело — согласиться пойти со мной на свидание! 😉
+        Знаешь почему ты должна пойти на свидание со мной? Я играю в шахматы и знаю как защитить свою королеву 😉
       </p>
 
       {/* Cute Cat Illustration with bold playful rotation */}
@@ -46,7 +46,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
         <div className="absolute inset-0 bg-[#FF4D6D] rounded-3xl rotate-6 group-hover:rotate-12 transition-transform opacity-80" />
         <img
           src={catImg}
-          alt="Симпатичный котик с букетом"
+          alt="Плачущий котик"
           referrerPolicy="no-referrer"
           className="relative w-full h-full object-cover rounded-3xl shadow-xl border-4 border-white -rotate-3 group-hover:rotate-0 transition-transform duration-300"
         />

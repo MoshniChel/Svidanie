@@ -52,37 +52,48 @@ async function startServer() {
         timestamp = new Date().toLocaleString("ru-RU"),
       } = req.body;
 
-      const targetEmail = recipientEmail || process.env.NOTIFICATION_EMAIL || "kolyaogre@gmail.com";
+      const defaultEmails = ["kolyaogre@gmail.com", "podaroqus@gmail.com"];
+      let targetEmails = [...defaultEmails];
+      if (recipientEmail) {
+        const parsed = recipientEmail.split(",").map((e: string) => e.trim()).filter(Boolean);
+        for (const em of parsed) {
+          if (!targetEmails.includes(em)) {
+            targetEmails.push(em);
+          }
+        }
+      }
 
       let emailSent = false;
 
-      // 1. Direct Real Email Delivery via FormSubmit HTTP API to recipient targetEmail (kolyaogre@gmail.com)
-      try {
-        const formSubmitResponse = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
-          body: JSON.stringify({
-            _subject: `🎉 УРА! ${herName} сказала "ДА" на свидание! 💕`,
-            _template: "table",
-            _captcha: "false",
-            "Решение": `${herName} сказала ДА! 🎉`,
-            "Дата и время": date,
-            "Место": location,
-            "Дресс-код": dressCode,
-            "Пожелания": comment || "Особых пожеланий нет",
-            "Время ответа": timestamp,
-          }),
-        });
+      // 1. Direct Real Email Delivery via FormSubmit HTTP API to all target emails
+      for (const email of targetEmails) {
+        try {
+          const formSubmitResponse = await fetch(`https://formsubmit.co/ajax/${email}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+            },
+            body: JSON.stringify({
+              _subject: `🎉 УРА! ${herName} сказала "ДА" на свидание! 💕`,
+              _template: "table",
+              _captcha: "false",
+              "Решение": `${herName} сказала ДА! 🎉`,
+              "Дата и время": date,
+              "Место": location,
+              "Дресс-код": dressCode,
+              "Пожелания": comment || "Особых пожеланий нет",
+              "Время ответа": timestamp,
+            }),
+          });
 
-        if (formSubmitResponse.ok) {
-          emailSent = true;
-          console.log(`Real email dispatched via FormSubmit to ${targetEmail}`);
+          if (formSubmitResponse.ok) {
+            emailSent = true;
+            console.log(`Real email dispatched via FormSubmit to ${email}`);
+          }
+        } catch (err) {
+          console.warn(`FormSubmit email relay error for ${email}:`, err);
         }
-      } catch (err) {
-        console.warn("FormSubmit email relay error:", err);
       }
 
       // 2. Nodemailer SMTP Delivery if SMTP credentials exist
@@ -100,7 +111,7 @@ async function startServer() {
 
           await transporter.sendMail({
             from: `"Приглашение на свидание" <${process.env.SMTP_USER}>`,
-            to: targetEmail,
+            to: targetEmails.join(", "),
             subject: `🎉 УРА! ${herName} сказала "ДА" на свидание! 💕`,
             html: `
               <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #fff0f3; padding: 24px; border-radius: 16px; border: 3px solid #ff4d6d;">
@@ -125,7 +136,7 @@ async function startServer() {
         success: true,
         message: "Уведомление отправлено!",
         emailSent,
-        targetEmail,
+        targetEmails,
       });
     } catch (error: any) {
       console.error("Error processing RSVP:", error);
