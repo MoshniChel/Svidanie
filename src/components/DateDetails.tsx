@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Clock, MapPin, Shirt, MessageSquare } from "lucide-react";
+import { Calendar, Clock, MapPin, Shirt, MessageSquare, Gift } from "lucide-react";
 import { InvitationData } from "../types";
 
 interface DateDetailsProps {
@@ -68,6 +68,19 @@ export const DateDetails: React.FC<DateDetailsProps> = ({
             <div className="text-[11px] font-black uppercase text-[#800F2F] tracking-wider">Дресс-код</div>
             <div className="font-extrabold text-[#590D22] text-sm sm:text-base">
               {invitation.dressCode}
+            </div>
+          </div>
+        </div>
+
+        {/* Who Invites / Payment */}
+        <div className="sm:col-span-2 bg-white/90 rounded-2xl p-4 sm:p-5 border-3 border-[#FF4D6D] shadow-lg flex items-start gap-3.5">
+          <div className="p-3 rounded-2xl bg-[#FFB3C1]/50 text-[#FF4D6D] shrink-0 border border-[#FF758F]">
+            <Gift className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="text-[11px] font-black uppercase text-[#800F2F] tracking-wider">От меня</div>
+            <div className="font-extrabold text-[#590D22] text-sm sm:text-base">
+              Я приглашаю — значит все с меня 💳✨🎁🥂💸
             </div>
           </div>
         </div>

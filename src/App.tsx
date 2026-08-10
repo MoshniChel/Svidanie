@@ -3,6 +3,7 @@ import { HeroCard } from "./components/HeroCard";
 import { DateDetails } from "./components/DateDetails";
 import { InteractiveButtons } from "./components/InteractiveButtons";
 import { SuccessModal } from "./components/SuccessModal";
+import { MusicPlayer } from "./components/MusicPlayer";
 import { DEFAULT_INVITATION } from "./data/defaults";
 import { InvitationData, RsvpResponse } from "./types";
 import { decodeInvitationFromUrl } from "./utils/calendar";
@@ -139,7 +140,8 @@ export default function App() {
         </main>
       </div>
 
-      {/* Modals */}
+      {/* Modals & Audio Player */}
+      <MusicPlayer />
       {showSuccess && (
         <SuccessModal
           onClose={() => setShowSuccess(false)}
