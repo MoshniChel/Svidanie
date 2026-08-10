@@ -81,14 +81,20 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
       maxY = Math.max(padding, window.innerHeight - noHeight - padding);
     }
 
-    const gap = 20; // 20px clearance gap from YES button
+    const gap = 20; // clearance gap from YES button
+
+    // Define player exclusion zone in bottom-right corner
+    const playerWidth = 320;
+    const playerHeight = 100;
+    const playerLeftBoundary = window.innerWidth - playerWidth;
+    const playerTopBoundary = window.innerHeight - playerHeight;
 
     let bestX = 0;
     let bestY = 0;
     let maxDistSq = -1;
 
     // Sample candidate positions to guarantee non-overlap and in-bounds
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 150; i++) {
       const candLeft = minX + (maxX > minX ? Math.random() * (maxX - minX) : 0);
       const candTop = minY + (maxY > minY ? Math.random() * (maxY - minY) : 0);
 
@@ -99,20 +105,25 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
         candTop - gap < yesRect.bottom &&
         candTop + noHeight + gap > yesRect.top;
 
-      if (!overlapsYes) {
+      // Check overlap with fixed bottom-right Music Player
+      const overlapsPlayer =
+        candLeft + noWidth > playerLeftBoundary &&
+        candTop + noHeight > playerTopBoundary;
+
+      if (!overlapsYes && !overlapsPlayer) {
         bestX = candLeft - initialNoLeft;
         bestY = candTop - initialNoTop;
         break;
       }
 
-      // Track furthest position as fallback
+      // Track furthest position as fallback that doesn't overlap player
       const noCenterX = candLeft + noWidth / 2;
       const noCenterY = candTop + noHeight / 2;
       const yesCenterX = yesRect.left + yesRect.width / 2;
       const yesCenterY = yesRect.top + yesRect.height / 2;
       const distSq = (noCenterX - yesCenterX) ** 2 + (noCenterY - yesCenterY) ** 2;
 
-      if (distSq > maxDistSq) {
+      if (!overlapsPlayer && distSq > maxDistSq) {
         maxDistSq = distSq;
         bestX = candLeft - initialNoLeft;
         bestY = candTop - initialNoTop;

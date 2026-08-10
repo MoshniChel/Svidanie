@@ -101,7 +101,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFF0F3] text-[#590D22] font-sans antialiased pb-12 relative overflow-x-hidden selection:bg-[#FFB3C1] selection:text-[#590D22]">
+    <div className="min-h-screen bg-[#FFF0F3] text-[#590D22] font-sans antialiased pb-28 sm:pb-20 relative overflow-x-hidden selection:bg-[#FFB3C1] selection:text-[#590D22]">
       {/* Artistic Flair Decorative Background Blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-100px] left-[-100px] w-[380px] sm:w-[480px] h-[380px] sm:h-[480px] bg-[#FFB3C1] rounded-full blur-[60px] opacity-40 animate-pulse" />
