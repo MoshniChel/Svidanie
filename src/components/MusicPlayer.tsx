@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Volume2, VolumeX, Volume1, Music, Play, Pause } from "lucide-react";
 
-const PRIMARY_AUDIO = "/Kalym_cutted.mp3";
+const PRIMARY_AUDIO = `${import.meta.env.BASE_URL}Kalym_cutted.mp3`;
 
 export const MusicPlayer: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -20,13 +20,27 @@ export const MusicPlayer: React.FC = () => {
 
   // Attempt immediate playback & register gesture triggers for instant playback
   useEffect(() => {
+    let cleanedUp = false;
+
+    const cleanupListeners = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      events.forEach((evt) => {
+        window.removeEventListener(evt, handleUserGesture, true);
+        document.removeEventListener(evt, handleUserGesture, true);
+      });
+    };
+
     const playAudio = () => {
       if (audioRef.current && audioRef.current.paused) {
         audioRef.current
           .play()
-          .then(() => setIsPlaying(true))
+          .then(() => {
+            setIsPlaying(true);
+            cleanupListeners();
+          })
           .catch(() => {
-            // Autoplay blocked by browser policy until user interacts or source loading
+            // Autoplay blocked by browser policy until user interacts
           });
       }
     };
@@ -39,15 +53,14 @@ export const MusicPlayer: React.FC = () => {
       playAudio();
     };
 
-    const events = ["click", "touchstart", "pointerdown", "keydown", "scroll"];
-    events.forEach((evt) =>
-      window.addEventListener(evt, handleUserGesture, { once: true, capture: true })
-    );
+    const events = ["click", "touchstart", "pointerdown", "keydown"];
+    events.forEach((evt) => {
+      window.addEventListener(evt, handleUserGesture, true);
+      document.addEventListener(evt, handleUserGesture, true);
+    });
 
     return () => {
-      events.forEach((evt) =>
-        window.removeEventListener(evt, handleUserGesture, { capture: true })
-      );
+      cleanupListeners();
     };
   }, []);
 
@@ -102,6 +115,14 @@ export const MusicPlayer: React.FC = () => {
         src={PRIMARY_AUDIO}
         loop
         autoPlay
+        onCanPlay={() => {
+          if (audioRef.current && audioRef.current.paused) {
+            audioRef.current
+              .play()
+              .then(() => setIsPlaying(true))
+              .catch(() => {});
+          }
+        }}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
       />
