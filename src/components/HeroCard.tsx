@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { Heart, Sparkles, Star } from "lucide-react";
-import catImg from "../assets/images/cat_offering_rose_1786358638306.jpg";
+import heroImg from "../assets/images/TomWFlowers.png";
 
 interface HeroCardProps {
   herName: string;
@@ -45,8 +45,8 @@ export const HeroCard: React.FC<HeroCardProps> = ({
       <div className="relative w-44 h-44 sm:w-52 sm:h-52 mx-auto mb-6 group">
         <div className="absolute inset-0 bg-[#FF4D6D] rounded-3xl rotate-6 group-hover:rotate-12 transition-transform opacity-80" />
         <img
-          src={catImg}
-          alt="Плачущий котик"
+          src={heroImg}
+          alt="Том с цветами"
           referrerPolicy="no-referrer"
           className="relative w-full h-full object-cover rounded-3xl shadow-xl border-4 border-white -rotate-3 group-hover:rotate-0 transition-transform duration-300"
         />

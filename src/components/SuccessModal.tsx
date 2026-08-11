@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import confetti from "canvas-confetti";
 import { motion } from "motion/react";
 import { PartyPopper } from "lucide-react";
-import celebrationImg from "../assets/images/happy_cat_flowers_1786362849879.jpg";
+import celebrationImg from "../assets/images/Shocked.jpg";
 
 interface SuccessModalProps {
   onClose: () => void;
