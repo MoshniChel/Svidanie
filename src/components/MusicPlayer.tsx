@@ -134,12 +134,12 @@ export const MusicPlayer: React.FC = () => {
         dragMomentum={false}
         animate={{ y: [0, -6, 0] }}
         transition={{ y: { repeat: Infinity, duration: 3, ease: "easeInOut" } }}
-        className="fixed bottom-3 right-3 sm:bottom-5 sm:right-5 z-[100] flex items-center gap-1.5 sm:gap-2 bg-white/95 backdrop-blur-md border-2 border-[#FF4D6D] shadow-[0_8px_25px_rgba(255,77,109,0.35)] rounded-full p-1.5 sm:px-4 sm:py-2.5 transition-all hover:shadow-[0_12px_30px_rgba(255,77,109,0.5)] cursor-grab active:cursor-grabbing touch-none select-none"
+        className="fixed bottom-3 right-3 sm:bottom-5 sm:right-5 z-[100] flex items-center gap-1.5 sm:gap-2 bg-white/95 backdrop-blur-md border-2 border-[#FF4D6D] shadow-[0_8px_25px_rgba(255,77,109,0.35)] rounded-full p-1.5 sm:px-4 sm:py-2.5 transition-all hover:shadow-[0_12px_30px_rgba(255,77,109,0.5)] cursor-grab active:cursor-grabbing select-none touch-manipulation"
       >
         {/* Play / Pause Toggle Button */}
         <button
           onClick={togglePlay}
-          className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full font-bold text-xs sm:text-sm transition-all cursor-pointer active:scale-95 ${
+          className={`flex items-center gap-1.5 px-3 py-2 sm:px-3.5 sm:py-1.5 rounded-full font-bold text-xs sm:text-sm transition-all cursor-pointer active:scale-95 min-h-[38px] ${
             isPlaying
               ? "bg-[#FF4D6D] text-white hover:bg-[#FF758F]"
               : "bg-gradient-to-r from-[#FF4D6D] to-[#FF758F] text-white hover:scale-105"
@@ -151,24 +151,24 @@ export const MusicPlayer: React.FC = () => {
           ) : (
             <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current ml-0.5 shrink-0" />
           )}
-          <span className="whitespace-nowrap drop-shadow-sm">
+          <span className="whitespace-nowrap drop-shadow-sm text-xs sm:text-sm">
             {isPlaying ? "Музыка 🎶" : "Музыка 🎵"}
           </span>
         </button>
 
         {/* Volume & Mute Controls */}
-        <div className="flex items-center gap-1 bg-[#FFF0F3] px-2 py-1 sm:px-2.5 sm:py-1 rounded-full border border-[#FFB3C1]">
+        <div className="flex items-center gap-1 bg-[#FFF0F3] px-2 py-1.5 sm:px-2.5 sm:py-1 rounded-full border border-[#FFB3C1] min-h-[38px]">
           <button
             onClick={toggleMute}
-            className="p-0.5 sm:p-1 rounded-full hover:bg-[#FFB3C1]/50 text-[#800F2F] transition-colors cursor-pointer shrink-0"
+            className="p-1 rounded-full hover:bg-[#FFB3C1]/50 text-[#800F2F] transition-colors cursor-pointer shrink-0 min-w-[28px] min-h-[28px] flex items-center justify-center"
             title={isMuted ? "Включить звук" : "Выключить звук"}
           >
             {isMuted || volume === 0 ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500" />
+              <VolumeX className="w-4 h-4 text-red-500" />
             ) : volume < 50 ? (
-              <Volume1 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <Volume1 className="w-4 h-4" />
             ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <Volume2 className="w-4 h-4" />
             )}
           </button>
 
@@ -178,7 +178,7 @@ export const MusicPlayer: React.FC = () => {
             max="100"
             value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
-            className="w-10 sm:w-16 h-1.5 bg-[#FFB3C1] rounded-lg appearance-none cursor-pointer accent-[#FF4D6D] focus:outline-none"
+            className="w-12 sm:w-16 h-2 sm:h-1.5 bg-[#FFB3C1] rounded-lg appearance-none cursor-pointer accent-[#FF4D6D] focus:outline-none"
             title={`Громкость: ${isMuted ? 0 : volume}%`}
           />
         </div>

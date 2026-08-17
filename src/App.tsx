@@ -8,6 +8,7 @@ import { MusicPlayer } from "./components/MusicPlayer";
 import { DEFAULT_INVITATION } from "./data/defaults";
 import { InvitationData, RsvpResponse } from "./types";
 import { decodeInvitationFromUrl } from "./utils/calendar";
+import spongebobBgImg from "./assets/images/spongebob_point_bg_1786947985320.jpg";
 
 export default function App() {
   const [invitation, setInvitation] = useState<InvitationData>(DEFAULT_INVITATION);
@@ -114,32 +115,32 @@ export default function App() {
       {/* Bikini Bottom Themed Animated Background with SpongeBob pointing */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <motion.img
-          src="/src/assets/images/spongebob_point_bg_1786947985320.jpg"
+          src={spongebobBgImg}
           alt="Спанч Боб указывает на кнопку"
           referrerPolicy="no-referrer"
           initial={{ scale: 1.05 }}
           animate={{
             scale: [1.05, 1.12, 1.07, 1.13, 1.05],
-            x: [0, -12, 8, -6, 0],
-            y: [0, 8, -10, 6, 0],
+            x: [0, -10, 6, -5, 0],
+            y: [0, 6, -8, 5, 0],
           }}
           transition={{
             duration: 18,
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="w-full h-full object-cover object-center sm:object-right opacity-65 sm:opacity-80"
+          className="w-full h-full object-cover object-[65%_center] sm:object-right opacity-65 sm:opacity-80"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#FFF0F3]/60 via-[#FFF0F3]/35 to-[#FFE5EC]/65" />
 
-        {/* Floating Underwater Bubbles & Hearts */}
+        {/* Floating Underwater Bubbles */}
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
-            initial={{ y: "110vh", x: `${15 + i * 15}%`, opacity: 0 }}
+            initial={{ y: "110vh", x: `${12 + i * 15}%`, opacity: 0 }}
             animate={{
               y: "-20vh",
-              x: [`${15 + i * 15}%`, `${12 + i * 15 + (i % 2 ? 6 : -6)}%`, `${15 + i * 15}%`],
+              x: [`${12 + i * 15}%`, `${9 + i * 15 + (i % 2 ? 6 : -6)}%`, `${12 + i * 15}%`],
               opacity: [0, 0.45, 0.65, 0.3, 0],
             }}
             transition={{
@@ -148,20 +149,20 @@ export default function App() {
               delay: i * 2.2,
               ease: "linear",
             }}
-            className="absolute rounded-full border border-white/60 bg-white/20 backdrop-blur-[1px] shadow-sm"
+            className="absolute rounded-full border border-white/60 bg-white/20 backdrop-blur-[1px] shadow-sm pointer-events-none"
             style={{
-              width: `${16 + (i % 3) * 12}px`,
-              height: `${16 + (i % 3) * 12}px`,
+              width: `${14 + (i % 3) * 10}px`,
+              height: `${14 + (i % 3) * 10}px`,
             }}
           />
         ))}
 
-        <div className="absolute top-[-100px] left-[-100px] w-[380px] sm:w-[480px] h-[380px] sm:h-[480px] bg-[#FFB3C1] rounded-full blur-[70px] opacity-25 animate-pulse" />
-        <div className="absolute bottom-[-50px] right-[-50px] w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-[#FF4D6D] rounded-full blur-[80px] opacity-15 animate-pulse" />
+        <div className="absolute top-[-100px] left-[-100px] w-[280px] sm:w-[480px] h-[280px] sm:h-[480px] bg-[#FFB3C1] rounded-full blur-[70px] opacity-25 animate-pulse" />
+        <div className="absolute bottom-[-50px] right-[-50px] w-[260px] sm:w-[400px] h-[260px] sm:h-[400px] bg-[#FF4D6D] rounded-full blur-[80px] opacity-15 animate-pulse" />
       </div>
 
-      <div className="relative z-10 pt-6">
-        <main className="w-full max-w-2xl mx-auto px-4 space-y-6">
+      <div className="relative z-10 pt-4 sm:pt-6">
+        <main className="w-full max-w-2xl mx-auto px-3.5 sm:px-4 space-y-4 sm:space-y-6">
           {/* Hero Invitation Banner */}
           <HeroCard
             herName={invitation.herName}

@@ -14,11 +14,11 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
 }) => {
   const [noCount, setNoCount] = useState(0);
 
-  // Dynamic sizing based on how many times "НЕТ" was pressed
-  const paddingY = Math.min(16 + noCount * 5, 38);
-  const paddingX = Math.min(32 + noCount * 9, 68);
-  const fontSize = Math.min(18 + noCount * 2.5, 32);
-  const iconSize = Math.min(24 + noCount * 2.5, 38);
+  // Dynamic sizing based on how many times "НЕТ" was pressed (safe for mobile)
+  const paddingY = Math.min(14 + noCount * 4, 30);
+  const paddingX = Math.min(24 + noCount * 6, 52);
+  const fontSize = Math.min(16 + noCount * 2, 26);
+  const iconSize = Math.min(22 + noCount * 2, 32);
 
   const getNoButtonText = () => {
     if (noCount >= RUNAWAY_PHRASES.length - 1) {
@@ -37,12 +37,12 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
   };
 
   return (
-    <div className="w-full bg-white/95 backdrop-blur-md rounded-[32px] sm:rounded-[40px] p-6 sm:p-8 border-4 border-[#FF4D6D] shadow-2xl text-center relative flex flex-col items-center justify-center transform sm:rotate-1 z-20 transition-all duration-300">
-      <h3 className="text-2xl sm:text-3xl font-black text-[#590D22] mb-1 flex items-center justify-center gap-2">
+    <div className="w-full bg-white/95 backdrop-blur-md rounded-[28px] sm:rounded-[40px] p-5 sm:p-8 border-3 sm:border-4 border-[#FF4D6D] shadow-xl sm:shadow-2xl text-center relative flex flex-col items-center justify-center transform sm:rotate-1 z-20 transition-all duration-300">
+      <h3 className="text-xl sm:text-3xl font-black text-[#590D22] mb-1 flex items-center justify-center gap-2">
         <span>Ну что, идем?</span>
-        <Heart className="w-7 h-7 text-[#FF4D6D] fill-[#FF4D6D] animate-bounce" />
+        <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-[#FF4D6D] fill-[#FF4D6D] animate-bounce" />
       </h3>
-      <p className="text-xs sm:text-sm text-[#800F2F] font-medium mb-5">
+      <p className="text-xs sm:text-sm text-[#800F2F] font-medium mb-4 sm:mb-5 px-1">
         {noCount === 0
           ? "Сделай правильный выбор (подсказка: кнопка 'ДА' приносит счастье) ✨"
           : `Попыток нажатия на 'НЕТ': ${noCount} 🤭`}
@@ -51,7 +51,7 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
       {/* Buttons Container */}
       <motion.div
         layout
-        className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 w-full relative"
+        className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 w-full relative"
       >
         {/* YES BUTTON - physically expands and pushes the NO button */}
         <motion.button
@@ -71,7 +71,7 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
           onClick={() => onAccept(noCount)}
-          className="bg-[#FF4D6D] hover:bg-[#ff3358] text-white font-black rounded-full shadow-[0_8px_0_0_#A4133C] active:translate-y-1 active:shadow-[0_2px_0_0_#A4133C] flex items-center justify-center gap-3 transition-colors cursor-pointer z-10 relative select-none text-center"
+          className="max-w-full bg-[#FF4D6D] hover:bg-[#ff3358] text-white font-black rounded-full shadow-[0_6px_0_0_#A4133C] sm:shadow-[0_8px_0_0_#A4133C] active:translate-y-1 active:shadow-[0_2px_0_0_#A4133C] flex items-center justify-center gap-2.5 sm:gap-3 transition-colors cursor-pointer z-10 relative select-none text-center touch-manipulation min-h-[48px]"
         >
           {isLoading ? (
             <Sparkles
@@ -84,7 +84,7 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
               className="text-white shrink-0"
             />
           )}
-          <span className="leading-tight">ДА! Я согласна! 🎉</span>
+          <span className="leading-tight break-words">ДА! Я согласна! 🎉</span>
         </motion.button>
 
         {/* STATIONARY NO BUTTON - pushed naturally as YES button grows */}
@@ -97,7 +97,7 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleNoClick}
-          className={`px-6 py-3.5 font-extrabold text-sm sm:text-base rounded-full border-2 select-none cursor-pointer z-10 relative shadow-lg transition-colors text-center ${
+          className={`px-5 sm:px-6 py-3 sm:py-3.5 font-extrabold text-xs sm:text-base rounded-full border-2 select-none cursor-pointer z-10 relative shadow-md sm:shadow-lg transition-colors text-center touch-manipulation min-h-[44px] ${
             noCount >= RUNAWAY_PHRASES.length - 1
               ? "bg-[#FF4D6D] text-white border-[#A4133C] shadow-lg animate-pulse"
               : "bg-[#FFF0F3] hover:bg-[#FFB3C1]/50 text-[#590D22] border-[#FF758F]"
@@ -111,7 +111,7 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-xs text-[#FF4D6D] font-black mt-4 uppercase tracking-wider"
+          className="text-[11px] sm:text-xs text-[#FF4D6D] font-black mt-3 sm:mt-4 uppercase tracking-wider"
         >
           💡 Лайфхак: кнопка 'ДА' становится всё больше и больше!
         </motion.p>
