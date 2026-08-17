@@ -38,7 +38,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
       </h2>
 
       <p className="text-[#800F2F] font-serif italic text-sm sm:text-lg max-w-xl mx-auto mb-5 leading-relaxed px-1">
-        Знаешь почему ты должна пойти на свидание со мной? Я играю в шахматы и знаю как защитить свою королеву 😉
+        Знаешь почему ты должна пойти на свидание со мной? Я играю в шахматы и знаю как защитить свою Королеву 😉
       </p>
 
       {/* Cute Cat Illustration with bold playful rotation */}
