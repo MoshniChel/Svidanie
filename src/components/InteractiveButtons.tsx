@@ -1,10 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { motion } from "motion/react";
 import { Heart, CheckCircle2, Sparkles } from "lucide-react";
 import { RUNAWAY_PHRASES } from "../data/defaults";
 
 interface InteractiveButtonsProps {
-  onAccept: () => void;
+  onAccept: (noCount: number) => void;
   isLoading: boolean;
 }
 
@@ -13,208 +13,108 @@ export const InteractiveButtons: React.FC<InteractiveButtonsProps> = ({
   isLoading,
 }) => {
   const [noCount, setNoCount] = useState(0);
-  const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
-  const [hasMoved, setHasMoved] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const yesButtonRef = useRef<HTMLButtonElement>(null);
-  const noButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Calculate dynamic scale for YES button as NO button is dodged
-  const yesScale = Math.min(1 + noCount * 0.12, 1.7);
-
-  const moveNoButton = () => {
-    if (noCount >= 10) return;
-    
-    const nextCount = noCount + 1;
-    setNoCount(nextCount);
-
-    if (nextCount >= 10) {
-      setNoPosition({ x: 0, y: 0 });
-      return;
-    }
-
-    if (!noButtonRef.current || !yesButtonRef.current) return;
-
-    const noRect = noButtonRef.current.getBoundingClientRect();
-    const yesRect = yesButtonRef.current.getBoundingClientRect();
-    const containerRect = containerRef.current?.getBoundingClientRect();
-
-    // Current initial top-left of NO button (without transform offset)
-    const initialNoLeft = noRect.left - noPosition.x;
-    const initialNoTop = noRect.top - noPosition.y;
-
-    const noWidth = noRect.width || 120;
-    const noHeight = noRect.height || 44;
-
-    // Padding from screen edges
-    const padding = 16;
-
-    let minX = padding;
-    let maxX = window.innerWidth - noWidth - padding;
-    let minY = padding;
-    let maxY = window.innerHeight - noHeight - padding;
-
-    if (containerRect) {
-      // Keep inside container bounds if space allows
-      const cMinX = Math.max(padding, containerRect.left + padding);
-      const cMaxX = Math.min(window.innerWidth - noWidth - padding, containerRect.right - noWidth - padding);
-      const cMinY = Math.max(padding, containerRect.top + padding);
-      const cMaxY = Math.min(window.innerHeight - noHeight - padding, containerRect.bottom - noHeight - padding);
-
-      if (cMaxX > cMinX) {
-        minX = cMinX;
-        maxX = cMaxX;
-      }
-      if (cMaxY > cMinY) {
-        minY = cMinY;
-        maxY = cMaxY;
-      }
-    }
-
-    // Safety checks for boundaries
-    if (maxX < minX) {
-      minX = padding;
-      maxX = Math.max(padding, window.innerWidth - noWidth - padding);
-    }
-    if (maxY < minY) {
-      minY = padding;
-      maxY = Math.max(padding, window.innerHeight - noHeight - padding);
-    }
-
-    const gap = 20; // clearance gap from YES button
-
-    // Get live bounding box of the music player pill if present
-    const playerEl = document.getElementById("music-player-pill");
-    const playerRect = playerEl ? playerEl.getBoundingClientRect() : null;
-
-    // Player exclusion zone (only active if player exists)
-    const pLeft = playerRect ? playerRect.left - 24 : 0;
-    const pRight = playerRect ? playerRect.right + 24 : 0;
-    const pTop = playerRect ? playerRect.top - 24 : 0;
-    const pBottom = playerRect ? playerRect.bottom + 24 : 0;
-
-    let bestX = 0;
-    let bestY = 0;
-    let maxDistSq = -1;
-
-    // Sample candidate positions to guarantee non-overlap and in-bounds
-    for (let i = 0; i < 200; i++) {
-      const candLeft = minX + (maxX > minX ? Math.random() * (maxX - minX) : 0);
-      const candTop = minY + (maxY > minY ? Math.random() * (maxY - minY) : 0);
-
-      // Check overlap with YES button
-      const overlapsYes =
-        candLeft - gap < yesRect.right &&
-        candLeft + noWidth + gap > yesRect.left &&
-        candTop - gap < yesRect.bottom &&
-        candTop + noHeight + gap > yesRect.top;
-
-      // Check overlap with fixed bottom-right Music Player (if visible)
-      const overlapsPlayer = playerRect ? (
-        candLeft < pRight &&
-        candLeft + noWidth > pLeft &&
-        candTop < pBottom &&
-        candTop + noHeight > pTop
-      ) : false;
-
-      if (!overlapsYes && !overlapsPlayer) {
-        bestX = candLeft - initialNoLeft;
-        bestY = candTop - initialNoTop;
-        break;
-      }
-
-      // Track furthest position as fallback that doesn't overlap player
-      const noCenterX = candLeft + noWidth / 2;
-      const noCenterY = candTop + noHeight / 2;
-      const yesCenterX = yesRect.left + yesRect.width / 2;
-      const yesCenterY = yesRect.top + yesRect.height / 2;
-      const distSq = (noCenterX - yesCenterX) ** 2 + (noCenterY - yesCenterY) ** 2;
-
-      if (!overlapsPlayer && distSq > maxDistSq) {
-        maxDistSq = distSq;
-        bestX = candLeft - initialNoLeft;
-        bestY = candTop - initialNoTop;
-      }
-    }
-
-    setNoPosition({ x: bestX, y: bestY });
-    setHasMoved(true);
-  };
+  // Dynamic sizing based on how many times "НЕТ" was pressed
+  const paddingY = Math.min(16 + noCount * 5, 38);
+  const paddingX = Math.min(32 + noCount * 9, 68);
+  const fontSize = Math.min(18 + noCount * 2.5, 32);
+  const iconSize = Math.min(24 + noCount * 2.5, 38);
 
   const getNoButtonText = () => {
-    if (noCount >= 10) {
-      return "Полюбому 💕";
+    if (noCount >= RUNAWAY_PHRASES.length - 1) {
+      return RUNAWAY_PHRASES[RUNAWAY_PHRASES.length - 1];
     }
     return RUNAWAY_PHRASES[noCount];
   };
 
-  const handleNoAction = (e: React.SyntheticEvent) => {
+  const handleNoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (noCount >= 10) {
-      onAccept();
+    if (noCount >= RUNAWAY_PHRASES.length - 1) {
+      onAccept(noCount);
     } else {
-      moveNoButton();
+      setNoCount((prev) => prev + 1);
     }
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full bg-white/90 rounded-[32px] sm:rounded-[40px] p-6 sm:p-8 border-4 border-[#FF4D6D] shadow-2xl text-center relative min-h-[240px] flex flex-col items-center justify-center transform sm:rotate-1 z-20"
-    >
-      <h3 className="text-2xl sm:text-3xl font-black text-[#590D22] mb-2 flex items-center justify-center gap-2">
+    <div className="w-full bg-white/95 backdrop-blur-md rounded-[32px] sm:rounded-[40px] p-6 sm:p-8 border-4 border-[#FF4D6D] shadow-2xl text-center relative flex flex-col items-center justify-center transform sm:rotate-1 z-20 transition-all duration-300">
+      <h3 className="text-2xl sm:text-3xl font-black text-[#590D22] mb-1 flex items-center justify-center gap-2">
         <span>Ну что, идем?</span>
         <Heart className="w-7 h-7 text-[#FF4D6D] fill-[#FF4D6D] animate-bounce" />
       </h3>
-      <p className="text-xs sm:text-sm text-[#800F2F] font-medium mb-6">
+      <p className="text-xs sm:text-sm text-[#800F2F] font-medium mb-5">
         {noCount === 0
           ? "Сделай правильный выбор (подсказка: кнопка 'ДА' приносит счастье) ✨"
           : `Попыток нажатия на 'НЕТ': ${noCount} 🤭`}
       </p>
 
       {/* Buttons Container */}
-      <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 min-h-[90px] w-full relative">
-        {/* YES BUTTON */}
+      <motion.div
+        layout
+        className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 w-full relative"
+      >
+        {/* YES BUTTON - physically expands and pushes the NO button */}
         <motion.button
-          ref={yesButtonRef}
+          layout
           type="button"
           disabled={isLoading}
-          style={{ transform: `scale(${yesScale})` }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          onClick={onAccept}
-          className="px-8 sm:px-10 py-4 sm:py-5 bg-[#FF4D6D] hover:bg-[#ff3358] text-white font-black text-xl sm:text-2xl rounded-full shadow-[0_8px_0_0_#A4133C] active:translate-y-1 active:shadow-[0_2px_0_0_#A4133C] flex items-center gap-3 transition-all cursor-pointer z-10 relative"
+          style={{
+            paddingTop: `${paddingY}px`,
+            paddingBottom: `${paddingY}px`,
+            paddingLeft: `${paddingX}px`,
+            paddingRight: `${paddingX}px`,
+            fontSize: `${fontSize}px`,
+          }}
+          transition={{
+            layout: { type: "spring", stiffness: 300, damping: 25 },
+          }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => onAccept(noCount)}
+          className="bg-[#FF4D6D] hover:bg-[#ff3358] text-white font-black rounded-full shadow-[0_8px_0_0_#A4133C] active:translate-y-1 active:shadow-[0_2px_0_0_#A4133C] flex items-center justify-center gap-3 transition-colors cursor-pointer z-10 relative select-none text-center"
         >
           {isLoading ? (
-            <Sparkles className="w-7 h-7 animate-spin" />
+            <Sparkles
+              style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
+              className="animate-spin shrink-0"
+            />
           ) : (
-            <CheckCircle2 className="w-7 h-7 text-white" />
+            <CheckCircle2
+              style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
+              className="text-white shrink-0"
+            />
           )}
-          <span>ДА! Я согласна! 🎉</span>
+          <span className="leading-tight">ДА! Я согласна! 🎉</span>
         </motion.button>
 
-        {/* RUNAWAY NO BUTTON */}
+        {/* STATIONARY NO BUTTON - pushed naturally as YES button grows */}
         <motion.button
-          ref={noButtonRef}
+          layout
           type="button"
-          animate={hasMoved ? { x: noPosition.x, y: noPosition.y } : {}}
-          transition={{ type: "spring", stiffness: 220, damping: 20, mass: 0.6 }}
-          onMouseEnter={moveNoButton}
-          onTouchStart={handleNoAction}
-          onClick={handleNoAction}
-          className={`px-6 py-3.5 font-extrabold text-sm rounded-full border-2 select-none touch-none cursor-pointer z-40 relative shadow-xl transition-colors ${
-            noCount >= 10
+          transition={{
+            layout: { type: "spring", stiffness: 300, damping: 25 },
+          }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleNoClick}
+          className={`px-6 py-3.5 font-extrabold text-sm sm:text-base rounded-full border-2 select-none cursor-pointer z-10 relative shadow-lg transition-colors text-center ${
+            noCount >= RUNAWAY_PHRASES.length - 1
               ? "bg-[#FF4D6D] text-white border-[#A4133C] shadow-lg animate-pulse"
               : "bg-[#FFF0F3] hover:bg-[#FFB3C1]/50 text-[#590D22] border-[#FF758F]"
           }`}
         >
           {getNoButtonText()}
         </motion.button>
-      </div>
+      </motion.div>
 
       {noCount > 2 && (
-        <p className="text-xs text-[#FF4D6D] font-black mt-5 animate-fade-in uppercase tracking-wider">
-          💡 Лайфхак: чем больше пытаешься нажать "Нет", тем скорее согласишься!
-        </p>
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-xs text-[#FF4D6D] font-black mt-4 uppercase tracking-wider"
+        >
+          💡 Лайфхак: кнопка 'ДА' становится всё больше и больше!
+        </motion.p>
       )}
     </div>
   );

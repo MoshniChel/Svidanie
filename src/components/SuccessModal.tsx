@@ -71,7 +71,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ onClose }) => {
           onClick={onClose}
           className="w-full py-4 px-6 bg-[#FF4D6D] hover:bg-[#ff3358] text-white font-black text-lg sm:text-xl rounded-full shadow-[0_6px_0_0_#A4133C] active:translate-y-1 active:shadow-[0_2px_0_0_#A4133C] transition-all cursor-pointer"
         >
-          УРААА! 💕
+          Подтверждаю 💕
         </button>
       </motion.div>
     </div>

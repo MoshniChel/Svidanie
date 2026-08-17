@@ -7,7 +7,7 @@ const PRIMARY_AUDIO = `${import.meta.env.BASE_URL}Kalym_cutted.mp3`;
 export const MusicPlayer: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(80);
+  const [volume, setVolume] = useState(10);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 

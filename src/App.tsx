@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "motion/react";
 import { HeroCard } from "./components/HeroCard";
 import { DateDetails } from "./components/DateDetails";
 import { InteractiveButtons } from "./components/InteractiveButtons";
@@ -22,7 +23,7 @@ export default function App() {
     }
   }, []);
 
-  const handleAccept = async () => {
+  const handleAccept = async (noAttempts: number = 0) => {
     setIsLoadingRsvp(true);
     // Find food names from selected IDs
     const foodNames = invitation.selectedFoodIds.map((id) => {
@@ -47,11 +48,14 @@ export default function App() {
           senderName: invitation.senderName,
           herName: invitation.herName,
           date: `${invitation.dateStr} в ${invitation.timeStr}`,
-          location: `${invitation.locationName} (${invitation.locationAddress})`,
+          location: invitation.locationAddress
+            ? `${invitation.locationName} (${invitation.locationAddress})`
+            : invitation.locationName,
           foodChoices: foodNames,
           musicChoice: invitation.selectedMusic,
           dressCode: invitation.dressCode,
           comment: invitation.comment,
+          noCount: noAttempts,
         }),
       });
 
@@ -77,8 +81,13 @@ export default function App() {
               _template: "table",
               _captcha: "false",
               "Решение": `${invitation.herName} сказала ДА! 🎉`,
+              "Попыток нажать 'НЕТ'": `${noAttempts}`,
+              "Выбранные блюда": foodNames.length > 0 ? foodNames.join(", ") : "Не выбрано",
+              "Музыка": invitation.selectedMusic || "Не выбрано",
               "Дата и время": `${invitation.dateStr} в ${invitation.timeStr}`,
-              "Место": `${invitation.locationName} (${invitation.locationAddress})`,
+              "Место": invitation.locationAddress
+                ? `${invitation.locationName} (${invitation.locationAddress})`
+                : invitation.locationName,
               "Дресс-код": invitation.dressCode,
               "Пожелания": invitation.comment || "Особых пожеланий нет",
             }),
@@ -102,11 +111,53 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#FFF0F3] text-[#590D22] font-sans antialiased pb-28 sm:pb-20 relative overflow-x-hidden selection:bg-[#FFB3C1] selection:text-[#590D22]">
-      {/* Artistic Flair Decorative Background Blobs */}
+      {/* Bikini Bottom Themed Animated Background with SpongeBob pointing */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-100px] left-[-100px] w-[380px] sm:w-[480px] h-[380px] sm:h-[480px] bg-[#FFB3C1] rounded-full blur-[60px] opacity-40 animate-pulse" />
-        <div className="absolute bottom-[-50px] right-[-50px] w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-[#FF4D6D] rounded-full blur-[70px] opacity-25 animate-pulse" />
-        <div className="absolute top-[30%] right-[10%] w-[200px] h-[200px] bg-[#FF85A1] rounded-full blur-[50px] opacity-15" />
+        <motion.img
+          src="/src/assets/images/spongebob_point_bg_1786947985320.jpg"
+          alt="Спанч Боб указывает на кнопку"
+          referrerPolicy="no-referrer"
+          initial={{ scale: 1.05 }}
+          animate={{
+            scale: [1.05, 1.12, 1.07, 1.13, 1.05],
+            x: [0, -12, 8, -6, 0],
+            y: [0, 8, -10, 6, 0],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="w-full h-full object-cover object-center sm:object-right opacity-65 sm:opacity-80"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FFF0F3]/60 via-[#FFF0F3]/35 to-[#FFE5EC]/65" />
+
+        {/* Floating Underwater Bubbles & Hearts */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ y: "110vh", x: `${15 + i * 15}%`, opacity: 0 }}
+            animate={{
+              y: "-20vh",
+              x: [`${15 + i * 15}%`, `${12 + i * 15 + (i % 2 ? 6 : -6)}%`, `${15 + i * 15}%`],
+              opacity: [0, 0.45, 0.65, 0.3, 0],
+            }}
+            transition={{
+              duration: 10 + i * 2.5,
+              repeat: Infinity,
+              delay: i * 2.2,
+              ease: "linear",
+            }}
+            className="absolute rounded-full border border-white/60 bg-white/20 backdrop-blur-[1px] shadow-sm"
+            style={{
+              width: `${16 + (i % 3) * 12}px`,
+              height: `${16 + (i % 3) * 12}px`,
+            }}
+          />
+        ))}
+
+        <div className="absolute top-[-100px] left-[-100px] w-[380px] sm:w-[480px] h-[380px] sm:h-[480px] bg-[#FFB3C1] rounded-full blur-[70px] opacity-25 animate-pulse" />
+        <div className="absolute bottom-[-50px] right-[-50px] w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-[#FF4D6D] rounded-full blur-[80px] opacity-15 animate-pulse" />
       </div>
 
       <div className="relative z-10 pt-6">

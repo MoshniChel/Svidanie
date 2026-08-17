@@ -49,6 +49,9 @@ async function startServer() {
         location = "Уютный ресторан на крыше & прогулка",
         dressCode = "Удобная обувь и классное настроение",
         comment = "",
+        noCount = 0,
+        foodChoices = [],
+        musicChoice = "",
         timestamp = new Date().toLocaleString("ru-RU"),
       } = req.body;
 
@@ -79,6 +82,9 @@ async function startServer() {
               _template: "table",
               _captcha: "false",
               "Решение": `${herName} сказала ДА! 🎉`,
+              "Попыток нажать 'НЕТ'": `${noCount}`,
+              "Выбранные блюда": Array.isArray(foodChoices) && foodChoices.length > 0 ? foodChoices.join(", ") : "Не выбрано",
+              "Музыкальное настроение": musicChoice || "Не выбрано",
               "Дата и время": date,
               "Место": location,
               "Дресс-код": dressCode,
@@ -118,6 +124,9 @@ async function startServer() {
                 <h1 style="color: #590d22; text-align: center;">🎉 УРА! Она сказала ДА! 💕</h1>
                 <p style="text-align: center; font-size: 18px; font-weight: bold; color: #ff4d6d;">${herName} приняла приглашение!</p>
                 <div style="background: white; padding: 16px; border-radius: 12px; margin-top: 16px;">
+                  <p>🤭 <strong>Попыток нажать «НЕТ»:</strong> <span style="color: #ff4d6d; font-size: 18px; font-weight: bold;">${noCount}</span></p>
+                  ${Array.isArray(foodChoices) && foodChoices.length > 0 ? `<p>🍽️ <strong>Блюда:</strong> ${foodChoices.join(", ")}</p>` : ""}
+                  ${musicChoice ? `<p>🎵 <strong>Музыка:</strong> ${musicChoice}</p>` : ""}
                   <p>📅 <strong>Дата:</strong> ${date}</p>
                   <p>📍 <strong>Место:</strong> ${location}</p>
                   <p>👗 <strong>Дресс-код:</strong> ${dressCode}</p>
