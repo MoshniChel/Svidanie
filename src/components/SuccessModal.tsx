@@ -53,7 +53,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ onClose }) => {
 
           {/* Big Headline */}
           <h2 className="text-xl sm:text-3xl font-black text-[#590D22] tracking-tight mb-3 sm:mb-4 leading-tight">
-            УРААА! Да ну, ахуеть я ждал этого 10 тысячь лет 🎉💕
+            УРААА! Да ну, я ждал этого 10 тысяч лет 🎉💕
           </h2>
 
           {/* Celebration Image */}
